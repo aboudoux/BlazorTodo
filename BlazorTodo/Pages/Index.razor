@@ -1,0 +1,31 @@
+﻿@page "/"
+@using BlazorTodo.Stores
+@inherits BlazorState.BlazorStateComponent
+
+<div class="p-2">
+<div class="flex flex-col p-2">
+    <div class="flex flex-row gap-2">
+        <input class="border-2 rounded-lg grow" @bind="State.TaskInput"/>
+            <button @onclick="AddTaskClicked" class="rounded-full bg-blue-500 h-10 w-10 text-white text-xl active:scale-90 active:ring-2">+</button>
+    </div>
+</div>
+
+    @foreach (var item in State.TodoList)
+    {
+        @Checkbox(item)
+    }
+
+<button class="bg-red-600 text-white rounded-lg w-full active:scale-90" @onclick="() => Mediator.Send(new TodoState.ClearTask())">Clear removed items</button>
+</div>
+
+@code
+{
+    private TodoState State => GetState<TodoState>();
+
+    private RenderFragment Checkbox(TodoTask task)
+        => @<div><input type="checkbox" checked="@task.Checked"
+                 @onclick="() => Mediator.Send(new TodoState.CheckTask(task.Id, !task.Checked))"/> 
+               @task.Label</div>;
+
+    private void AddTaskClicked() => Mediator.Send(new TodoState.AddTask());
+}

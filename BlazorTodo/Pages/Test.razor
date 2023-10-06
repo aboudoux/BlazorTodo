@@ -1,0 +1,19 @@
+﻿@page "/test"
+
+
+<div class="flex flex-col p-2">
+    <label class="font-bold">TEXT</label>
+    <input @bind="Text" class="border-2 rounded-lg" @bind:event="oninput"/>
+    <label class="fint-bold">Surbrillance</label>
+    <input @bind="Highlight" @bind:event="oninput" class="border-2 rounded-lg"/>
+    <label class="fint-bold">Resultat</label>
+    <div>
+        <HighlightText Text="@Text" HighlightWords="@(Highlight.Split(' ', StringSplitOptions.RemoveEmptyEntries))"></HighlightText>
+    </div>
+</div>
+
+
+@code {
+    private string Text { get; set; } = string.Empty;
+    private string Highlight { get; set; } = string.Empty;
+}

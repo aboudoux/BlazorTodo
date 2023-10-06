@@ -1,0 +1,36 @@
+﻿@using System.Text.RegularExpressions
+
+@if (HighlightWords.Any())
+{
+    @HighlightedText
+}
+else
+{
+    @Text
+}
+
+
+@code {
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public string[] HighlightWords { get; set; }
+
+    private MarkupString HighlightedText => new(HighlightWordsInText());
+
+   
+    private string HighlightWordsInText()
+    {
+        if (string.IsNullOrWhiteSpace(Text) || HighlightWords == null || HighlightWords.Length == 0)
+        {
+            return Text ?? string.Empty;
+        }
+
+        var escapedText = System.Net.WebUtility.HtmlEncode(Text);
+        string pattern = "(" + string.Join("|", HighlightWords.OrderByDescending(a=>a.Length).Select(word => Regex.Escape(word))) + ")";
+        string replaced = Regex.Replace(escapedText, pattern, "<span style=\"background-color: yellow\">$1</span>", RegexOptions.IgnoreCase);
+        return replaced;
+    }
+}
+

@@ -1,0 +1,41 @@
+﻿@using System.Text.RegularExpressions
+@HighlightText(Text, HighlightWords)
+
+@code
+{
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public string[] HighlightWords { get; set; }
+
+    private MarkupString HighlightText(string text, string[] words)
+    {
+        List<Match> matches = new List<Match>();
+
+        foreach (var word in words.Distinct().Where(m=>!HighlightWords.Any(o=> o !=m && o.Contains(m) ))) {
+            matches.AddRange(Regex.Matches(Text, word));
+        }
+
+
+        string highlightedPhrase = text;
+        int offset = 0;
+
+        foreach (var match in matches.OrderBy(a=>a.Index))
+        {
+            int startIndex = match.Index + offset;
+            int endIndex = startIndex + match.Length;
+
+            string beforeMatch = highlightedPhrase.Substring(0, startIndex);
+            string afterMatch = highlightedPhrase.Substring(endIndex);
+
+            string remplacement =$"<span style=\"background-color: yellow\">{match.Value}</span>";
+
+            highlightedPhrase = beforeMatch + remplacement + afterMatch;
+
+            offset += remplacement.Length - match.Length;
+        }
+
+        return new MarkupString(highlightedPhrase);
+    }
+}
